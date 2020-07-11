@@ -9,7 +9,24 @@
                @if($message = Session::get('success'))
                  <div class="alert alert-success bg-success text-white">{{$message}}</div>
                @endif
-               <a href="{{route('pizza.create')}}" class="btn btn-primary m-2">Create Pizza</a>
+              <div class="container d-flex ml-0 m-3">
+                  <div>
+                      <form action="{{route('pizza.index')}}" method="get">
+                          @csrf
+                        <div class="d-flex">
+                            <input type="text" name="name" class="form-control " style="width: 200px">
+                            <select name="price" class="form-control" style="width: 150px">
+                                <option value="" selected>NO OPTIONS</option>
+                                @foreach($pizzas as $pizza)
+                                <option class="form-control" value="{{$pizza->price}}">{{$pizza->price}}</option>
+                                @endforeach
+                            </select>
+                            <button type="submit" class="btn btn-primary">search</button>
+                        </div>
+                      </form>
+                  </div>
+                  <div class="ml-4"> <a href="{{route('pizza.create')}}" class="btn btn-primary">Create Pizza</a></div>
+              </div>
                <table class="table table-striped" style="font-size: 18px;">
                    <thead>
                    <tr>
@@ -38,8 +55,10 @@
                            <td colspan="3">NO PIZZAS</td>
                        </tr>
                    @endforelse
+
                    </tbody>
-               </table>
+
+               </table>                   {{$pizzas->links()}}
            </div>
         </div>
 

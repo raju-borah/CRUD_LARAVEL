@@ -14,9 +14,22 @@ class PizzaController extends Controller
      */
     public function index()
     {
-        $pizzas = Pizza::all();
-//        dd($pizzas);
-        return view('pizza.index',compact('pizzas'));
+        $search = request()->get('name');
+        $price = request()->get('price');
+        if ($search) {
+
+            if ($price){
+                $pizzas = Pizza::where("name", "LIKE", "%{$search}%")->where('price',$price)->paginate(5);
+                return view('pizza.index', compact('pizzas'));
+            }
+           else{
+               $pizzas = Pizza::where("name", "LIKE", "%{$search}%")->orWhere("price", "LIKE", "%{$search}%")->orderBy('price','ASC')->paginate(5);
+               return view('pizza.index', compact('pizzas'));
+           }
+
+        }
+        $pizzas = Pizza::orderBy('price','ASC')->paginate(5);
+        return view('pizza.index', compact('pizzas'));
     }
 
     /**
@@ -32,29 +45,29 @@ class PizzaController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
         //1. get the data from html form
-        $data = $request->only(['name','price']);
+        $data = $request->only(['name', 'price']);
 
         //2. store into DB
         Pizza::create([
-            'name'=>$data['name'],
-            'price'=>$data['price']
+            'name' => $data['name'],
+            'price' => $data['price']
         ]);
 
 //        Pizza::create($data);
 //        session()->flash('success','Data Created!!');
-        return redirect()->route('pizza.index')->with('success',"Data Created!!");
+        return redirect()->route('pizza.index')->with('success', "Data Created!!");
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Pizza  $pizza
+     * @param \App\Pizza $pizza
      * @return \Illuminate\Http\Response
      */
     public function show(Pizza $pizza)
@@ -65,28 +78,28 @@ class PizzaController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Pizza  $pizza
+     * @param \App\Pizza $pizza
      * @return \Illuminate\Http\Response
      */
     public function edit(Pizza $pizza)
     {
-        return  view('pizza.edit',compact('pizza'));
+        return view('pizza.edit', compact('pizza'));
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Pizza  $pizza
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Pizza $pizza
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Pizza $pizza)
     {
         // get the data from html
-        $data = $request->only(['name','price']);
+        $data = $request->only(['name', 'price']);
         // update the info or data
         $pizza->update($data);
-        session()->flash('success','Data Updated!!');
+        session()->flash('success', 'Data Updated!!');
         return redirect()->route('pizza.index');
 
     }
@@ -94,13 +107,13 @@ class PizzaController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Pizza  $pizza
+     * @param \App\Pizza $pizza
      * @return \Illuminate\Http\Response
      */
     public function destroy(Pizza $pizza)
     {
         $pizza->delete();
-        session()->flash('success','Data Deleted!!');
+        session()->flash('success', 'Data Deleted!!');
         return redirect()->route('pizza.index');
 
     }

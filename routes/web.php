@@ -32,9 +32,7 @@ Route::get('/', function () {
 
 });
 
-
-
-Auth::routes(['verify' => true]);
+Auth::routes();
 Route::resource('/pizza', 'PizzaController',
     ['names' =>[
         'index'=>'pizza.index',

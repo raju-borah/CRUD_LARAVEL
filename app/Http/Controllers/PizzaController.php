@@ -4,31 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Pizza;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PizzaController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index()
     {
-        $search = request()->get('name');
-        $price = request()->get('price');
-        if ($search) {
-
-            if ($price){
-                $pizzas = Pizza::where("name", "LIKE", "%{$search}%")->where('price',$price)->paginate(5);
-                return view('pizza.index', compact('pizzas'));
-            }
-           else{
-               $pizzas = Pizza::where("name", "LIKE", "%{$search}%")->orWhere("price", "LIKE", "%{$search}%")->orderBy('price','ASC')->paginate(5);
-               return view('pizza.index', compact('pizzas'));
-           }
-
-        }
-        $pizzas = Pizza::orderBy('price','ASC')->paginate(5);
+//        $pizzas = Pizza::orderBy('price','ASC')->paginate(5);
+        $pizzas = DB::table('pizzas')->select('*')->paginate(15);
         return view('pizza.index', compact('pizzas'));
     }
 
@@ -52,13 +40,13 @@ class PizzaController extends Controller
     {
         //1. get the data from html form
         $data = $request->only(['name', 'price']);
-
         //2. store into DB
-        Pizza::create([
-            'name' => $data['name'],
-            'price' => $data['price']
-        ]);
-
+//        Pizza::create([
+//            'name' => $data['name'],
+//            'price' => $data['price']
+//        ]);
+        // alternative
+        Pizza::create($data);
 //        Pizza::create($data);
 //        session()->flash('success','Data Created!!');
         return redirect()->route('pizza.index')->with('success', "Data Created!!");
@@ -68,18 +56,18 @@ class PizzaController extends Controller
      * Display the specified resource.
      *
      * @param \App\Pizza $pizza
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function show(Pizza $pizza)
     {
-
+        return view('pizza.show', compact('pizza'));
     }
 
     /**
      * Show the form for editing the specified resource.
      *
      * @param \App\Pizza $pizza
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function edit(Pizza $pizza)
     {
@@ -91,7 +79,7 @@ class PizzaController extends Controller
      *
      * @param \Illuminate\Http\Request $request
      * @param \App\Pizza $pizza
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(Request $request, Pizza $pizza)
     {
@@ -99,6 +87,13 @@ class PizzaController extends Controller
         $data = $request->only(['name', 'price']);
         // update the info or data
         $pizza->update($data);
+        //alternative
+//        $pizza->update(
+//            [
+//                'name'=>$data['name'],
+//                'price'=>$data['price']
+//            ]
+//        );
         session()->flash('success', 'Data Updated!!');
         return redirect()->route('pizza.index');
 
@@ -108,13 +103,13 @@ class PizzaController extends Controller
      * Remove the specified resource from storage.
      *
      * @param \App\Pizza $pizza
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy(Pizza $pizza)
     {
         $pizza->delete();
         session()->flash('success', 'Data Deleted!!');
-        return redirect()->route('pizza.index');
+        return redirect()->back();
 
     }
 }

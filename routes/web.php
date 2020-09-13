@@ -15,6 +15,9 @@
 //    return view('welcome');
 //});
 
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
+
 Route::get('/', function () {
     return view('welcome');
 // open and resize an image file
@@ -42,7 +45,11 @@ Route::resource('/pizza', 'PizzaController',
         'update'=>'pizza.update',
         'show'=>'pizza.show',
         'destroy'=>'pizza.destroy'
-    ]]);
+    ]])->middleware('auth');
 
 Route::get('/home', 'HomeController@index')->name('home');
+
+// user edit and update
+Route::get('/user/edit/{id}', 'UserController@edit')->name('user.edit');
+Route::patch('/user/update/{id}', 'UserController@update')->name('user.update');
 

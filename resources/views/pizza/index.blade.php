@@ -1,21 +1,23 @@
 @extends('layouts.layout')
 @section('content')
+@if($message = Session::has('success'))
+                 <div class="alert alert-success bg-success text-white">{{ Session::get('success') }}</div>
+                 {{ Session::forget('success') }} 
+               @endif
     <div class="flex-center position-ref full-height">
         <div class="container">
             <div class="title m-b-md text-center">
                 Pizzas List
             </div>
            <div class="container">
-               @if($message = Session::get('success'))
-                 <div class="alert alert-success bg-success text-white">{{$message}}</div>
-               @endif
-              <div class="container d-flex ml-0 m-3">
+            
+              <div class="container d-flex ml-0 m-3 pl-0">
                   <div>
                       <form action="{{route('pizza.index')}}" method="get">
                           @csrf
                         <div class="d-flex">
                             <input type="text" name="name" class="form-control " style="width: 200px">
-                            <select name="price" class="form-control" style="width: 150px">
+                            <select name="price" class="form-control" style="width: 150px" >
                                 <option value="" selected>NO OPTIONS</option>
                                 @foreach($pizzas as $pizza)
                                 <option class="form-control" value="{{$pizza->price}}">{{$pizza->price}}</option>
@@ -35,6 +37,7 @@
                        <th>Price</th>
                        <th>Edit</th>
                        <th>Delete</th>
+                       <th>Show</th>
                    </tr>
                    </thead>
                    <tbody>
@@ -49,6 +52,7 @@
                                    @method('DELETE')
                                    <button type="submit" class="btn btn-danger">Delete</button></form>
                            </td>
+                           <td><a href="{{route('pizza.show',$pizza->id)}}" class="btn btn-primary">Show</a></td>
                        </tr>
                    @empty
                        <tr>

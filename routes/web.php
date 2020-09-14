@@ -52,4 +52,3 @@ Route::get('/home', 'HomeController@index')->name('home');
 // user edit and update
 Route::get('/user/edit/{id}', 'UserController@edit')->name('user.edit');
 Route::patch('/user/update/{id}', 'UserController@update')->name('user.update');
-
